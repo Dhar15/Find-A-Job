@@ -6,7 +6,7 @@ import ConditionalNavbar from '@components/ConditionalNavbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Find A Job',
+  title: 'Just Apply Mate',
   description: 'Track, manage, and conquer your job applications',
 };
 

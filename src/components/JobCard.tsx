@@ -16,7 +16,7 @@ interface Props {
 }
 
 const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
-  const statusColors: any = {
+  const statusColors: Record<Job['status'], string> = {
     Wishlist: 'bg-blue-400',
     Applied: 'bg-orange-400',
     Interview: 'bg-yellow-400',
