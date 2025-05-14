@@ -28,7 +28,7 @@ export default function JobStatsPage() {
     setJobs(storedJobs);
   }, []);
 
-  const statusCounts = jobs.reduce((acc: Record<string, number>, job: any) => {
+  const statusCounts = jobs.reduce((acc: Record<string, number>, job: Job) => {
     const status = job.status || 'Unknown';
     acc[status] = (acc[status] || 0) + 1;
     return acc;

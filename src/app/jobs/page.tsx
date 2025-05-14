@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import JobCard from '@components/JobCard';
+import { Job } from '@/types/job';
 
 export default function JobsPage() {
-  const [jobs, setJobs] = useState<any[]>([]);
+  //const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const router = useRouter();
 
   useEffect(() => {
