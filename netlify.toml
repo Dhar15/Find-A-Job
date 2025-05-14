@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build"
-  publish = "build" # or "dist" for Vite, or "out" for Next.js export
+  command = "next build"
+  publish = ".next"
 
 [build.environment]
   PYTHON_VERSION = "3.10.4"
