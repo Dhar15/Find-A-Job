@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Job } from '@/types/job';
 import {
   PieChart,
   Pie,
@@ -19,7 +20,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function JobStatsPage() {
-  const [jobs, setJobs] = useState<any[]>([]);
+  // const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   useEffect(() => {
     const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');

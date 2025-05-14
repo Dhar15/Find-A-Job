@@ -10,7 +10,8 @@ export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [guestSession, setGuestSession] = useState<any>(null);
+  //const [guestSession, setGuestSession] = useState<any>(null);
+  const [guestSession, setGuestSession] = useState<{ user: { name: string; email: string; image: string } } | null>(null);
   const [form, setForm] = useState({ name: '', email: '', image: '' });
 
   const [editingField, setEditingField] = useState<string | null>(null);

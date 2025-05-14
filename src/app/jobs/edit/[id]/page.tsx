@@ -1,32 +1,36 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation'; // Use `useParams()` for dynamic routes
+import { useRouter, useParams } from 'next/navigation'; 
+import { Job } from '@/types/job';
 
 export default function EditJobPage() {
   const router = useRouter();
-  const { id } = useParams(); // Extract `id` from the URL using `useParams()`
+  const { id } = useParams(); 
 
-  const [job, setJob] = useState({
+  // const [job, setJob] = useState({
+  //   id: '',
+  //   title: '',
+  //   company: '',
+  //   status: '',
+  //   deadline: '',
+  // });
+
+  const [job, setJob] = useState<Job>({
     id: '',
     title: '',
     company: '',
-    status: '',
+    status: 'Wishlist',
     deadline: '',
   });
 
   useEffect(() => {
-    // Debugging: Log the jobId to check if it's being passed correctly
-    console.log('Job ID from URL:', id);
 
     if (id) {
       const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
-      // Debugging: Log the stored jobs to see the structure
-      console.log('Stored Jobs:', storedJobs);
       
       const jobToEdit = storedJobs.find((job: any) => job.id === id);
       if (jobToEdit) {
-        console.log('Job to Edit:', jobToEdit); // Debugging: Check the job to be edited
         setJob(jobToEdit);
       } else {
         console.error('Job not found');

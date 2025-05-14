@@ -1,12 +1,13 @@
 import React from 'react';
+import { Job } from '@/types/job';
 
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  status: string;
-  deadline: string;
-}
+// interface Job {
+//   id: string;
+//   title: string;
+//   company: string;
+//   status: string;
+//   deadline: string;
+// }
 
 interface Props {
   job: Job;
