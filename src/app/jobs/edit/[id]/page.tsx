@@ -27,9 +27,11 @@ export default function EditJobPage() {
   useEffect(() => {
 
     if (id) {
-      const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+      // const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+      const storedJobs: Job[] = JSON.parse(localStorage.getItem('jobs') || '[]');
       
-      const jobToEdit = storedJobs.find((job: any) => job.id === id);
+      // const jobToEdit = storedJobs.find((job: any) => job.id === id);
+      const jobToEdit = storedJobs.find((job) => job.id === id);
       if (jobToEdit) {
         setJob(jobToEdit);
       } else {
@@ -47,7 +49,7 @@ export default function EditJobPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
-    const updatedJobs = storedJobs.map((storedJob: any) =>
+    const updatedJobs = storedJobs.map((storedJob: Job) =>
       storedJob.id === job.id ? job : storedJob
     );
     localStorage.setItem('jobs', JSON.stringify(updatedJobs));
