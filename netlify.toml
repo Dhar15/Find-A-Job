@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "build" # or "dist" for Vite, or "out" for Next.js export
+
+[build.environment]
+  PYTHON_VERSION = "3.10.4"
+  NODE_VERSION = "18"  # Optional: aligns with Netlify default runtime
+
+[dev]
+  command = "npm run dev"
+  port = 3000
