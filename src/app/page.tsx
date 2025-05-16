@@ -45,23 +45,32 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-blue-100 flex flex-col items-center justify-center px-4">
+    // <main className="min-h-screen bg-blue-100 flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center px-4" style={{ backgroundImage: "url('/images/background.jpg')", backgroundPosition: "center", }}>
+      {/* <div className="text-center"> */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Your personal job tracker CRM.</h1>
-        <p className="text-lg text-gray-700 mb-8">Track, manage, and conquer your job applications.</p>
+        {/* <h1 className="text-4xl font-bold text-gray-900 mb-4">Your personal job tracker CRM.</h1>
+        <p className="text-lg text-gray-700 mb-8">Track, manage, and conquer your job applications.</p> */}
 
-        <div className="flex flex-col items-center space-y-2">
+        <div className="fixed bottom-15 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2">
+        {/* <div className="fixed bottom-20 right-20 grid grid-cols-2 gap-2"> */}
 
+          <div className="relative group w-max mx-auto">
           <button
+            disabled
             onClick={handleLinkedInSignIn}
-            className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-800 transition mb-4 max-w-xs"
+            className="bg-gray-800 text-gray-500 text-white font-semibold px-6 py-3 mb-4 rounded-md opacity-60 cursor-not-allowed pointer-events-none"
           >
             Sign in with LinkedIn
           </button>
+          <span className="absolute -bottom-4 left -translate-x-1/2 bg-black text-red text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            Currently unavailable
+          </span>
+          </div>
 
           <button
             onClick={handleGuestLogin}
-            className="text-sm text-blue-600 cursor-pointer underline hover:text-blue-800"
+            className="text-m text-blue-600 cursor-pointer underline hover:text-blue-800"
           >
             Sign in as a guest
           </button>
