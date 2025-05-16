@@ -50,7 +50,7 @@ export default function JobStatsPage() {
   const rejectionRate = applied ? ((rejected / applied) * 100).toFixed(1) : '0';
 
   const upcoming = jobs
-    .filter((job) => job.deadline && new Date(job.deadline) > new Date())
+    .filter((job) => job.status === 'Interview' && job.deadline && new Date(job.deadline) > new Date())
     .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())[0];
 
   return (
