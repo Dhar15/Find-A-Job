@@ -45,15 +45,10 @@ export default function HomePage() {
   }
 
   return (
-    // <main className="min-h-screen bg-blue-100 flex flex-col items-center justify-center px-4">
     <main className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center px-4" style={{ backgroundImage: "url('/images/background.jpg')", backgroundPosition: "center", }}>
-      {/* <div className="text-center"> */}
       <div className="text-center">
-        {/* <h1 className="text-4xl font-bold text-gray-900 mb-4">Your personal job tracker CRM.</h1>
-        <p className="text-lg text-gray-700 mb-8">Track, manage, and conquer your job applications.</p> */}
 
         <div className="fixed bottom-15 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2">
-        {/* <div className="fixed bottom-20 right-20 grid grid-cols-2 gap-2"> */}
 
           <div className="relative group w-max mx-auto">
           <button
