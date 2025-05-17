@@ -14,6 +14,8 @@ const handler = NextAuth({
           scope: 'openid profile email',
         },
       },
+      issuer: 'https://www.linkedin.com/oauth',
+      jwks_endpoint: 'https://www.linkedin.com/oauth/openid/jwks',
       profile(profile) {
         return {
           id: profile.id || profile.sub || "",
@@ -69,3 +71,4 @@ const handler = NextAuth({
 });
 
 export { handler as GET, handler as POST };
+

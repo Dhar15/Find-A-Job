@@ -8,11 +8,21 @@ import { Job } from '@/types/job';
 export default function JobsPage() {
   //const [jobs, setJobs] = useState<any[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [showBanner, setShowBanner] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
     setJobs(storedJobs);
+
+    const justLoggedIn = sessionStorage.getItem('justLoggedIn');
+    if (justLoggedIn === 'true') {
+      setShowBanner(true);
+      setTimeout(() => {
+        setShowBanner(false);
+        sessionStorage.removeItem('justLoggedIn');
+      }, 4000);
+    }
   }, []);
 
   const handleAddJob = () => {
@@ -32,6 +42,11 @@ export default function JobsPage() {
   return (
     <main className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
       <div className="w-full max-w-4xl bg-white p-6 rounded-xl shadow-md text-gray-900">
+         {showBanner && (
+          <div className="bg-green-400 text-white text-center py-2 text-sm font-semibold rounded-md mb-4">
+             Successfully logged in ✅
+          </div>
+        )}
         <h1 className="text-2xl font-bold mb-4 text-center">Job Dashboard</h1>
 
         <button

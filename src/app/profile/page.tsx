@@ -186,6 +186,7 @@
             <button
               onClick={() => {
                 localStorage.removeItem('guestSession');
+                sessionStorage.removeItem('justLoggedIn');
                 signOut({ callbackUrl: '/' });
               }}
               className="mt-6 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
@@ -197,3 +198,5 @@
       </div>
     );
   }
+
+

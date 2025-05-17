@@ -11,12 +11,13 @@ export default function HomePage() {
   // Redirect to profile if already authenticated
   useEffect(() => {
     if (status === 'authenticated') {
-      router.push('/profile');
+      router.push('/jobs');
     }
   }, [status, router]);
 
   const handleLinkedInSignIn = async () => {
-    await signIn('linkedin', { callbackUrl: '/profile' });
+    sessionStorage.setItem('justLoggedIn', 'true');
+    await signIn('linkedin', { callbackUrl: '/jobs' });
   };
 
   const handleGuestLogin = () => {
@@ -52,15 +53,14 @@ export default function HomePage() {
 
           <div className="relative group w-max mx-auto">
           <button
-            disabled
             onClick={handleLinkedInSignIn}
-            className="bg-gray-800 text-gray-500 text-white font-semibold px-6 py-3 mb-4 rounded-md opacity-60 cursor-not-allowed pointer-events-none"
+            className="bg-blue-600 text-white font-semibold px-6 py-3 mb-4 rounded-md opacity-60 cursor-pointer hover:bg-blue-800"
           >
             Sign in with LinkedIn
           </button>
-          <span className="absolute -bottom-4 left -translate-x-1/2 bg-black text-red text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {/* <span className="absolute -bottom-4 left -translate-x-1/2 bg-black text-red text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             Currently unavailable
-          </span>
+          </span> */}
           </div>
 
           <button
@@ -76,3 +76,5 @@ export default function HomePage() {
     </main>
   );
 }
+
+
