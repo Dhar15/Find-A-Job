@@ -48,7 +48,7 @@ export default function AddJobPage() {
         return;
       }
 
-     const { data, error: supabaseError } = await supabase
+     const { error: supabaseError } = await supabase
           .from('jobs')
           .insert([{
             ...newJob,

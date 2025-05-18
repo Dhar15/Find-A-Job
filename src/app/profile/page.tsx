@@ -187,7 +187,9 @@
               onClick={() => {
                 localStorage.removeItem('guestSession');
                 sessionStorage.removeItem('justLoggedIn');
-                isGuest ? sessionStorage.clear() : '';
+                if (isGuest) {
+                  sessionStorage.clear();
+                }
                 
                 signOut({
                   callbackUrl: '/',
