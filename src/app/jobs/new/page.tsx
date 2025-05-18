@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { v4 as uuidv4 } from 'uuid';
+import { createBrowserClient } from '@supabase/ssr';
 
 export default function AddJobPage() {
   const [title, setTitle] = useState('');
@@ -10,36 +12,68 @@ export default function AddJobPage() {
   const [status, setStatus] = useState('Wishlist');
   const [deadline, setDeadline] = useState('');
 
+  const { data: session } = useSession();
   const router = useRouter();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newJob = {
-      id: uuidv4(), //Generates a unique ID with UUID
+      id: uuidv4(),
       title,
       company,
       status,
-      deadline,
+      deadline: deadline || null,
+      created_at: new Date().toISOString(),
     };
 
-    const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
-    storedJobs.push(newJob);
-    
-    localStorage.setItem('jobs', JSON.stringify(storedJobs));
+    const guestSession = JSON.parse(localStorage.getItem('guestSession') || 'null');
+    const isGuest = session?.user?.email === 'guest@example.com' || guestSession?.user?.email === 'guest@example.com';
+
+    if (isGuest) {
+      const guestJobs = JSON.parse(sessionStorage.getItem('guestJobs') || '[]');
+      guestJobs.unshift(newJob);
+      sessionStorage.setItem('guestJobs', JSON.stringify(guestJobs));
+    } else {
+      const userId = session?.user?.id;
+
+       console.log('Session data:', session); // Debug: Log session data
+
+      if (!userId) {
+        console.error('Authenticated user not found.');
+        return;
+      }
+
+     const { data, error: supabaseError } = await supabase
+          .from('jobs')
+          .insert([{
+            ...newJob,
+            user_id: userId,
+          }])
+          .select();
+
+      if (supabaseError) {
+        console.error('Error inserting job to Supabase:', supabaseError.message);
+        alert('Failed to save job. Please try again.');
+        return;
+      }
+    }
 
     router.push('/jobs');
   };
 
   return (
     <main className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
-        <div className="w-full max-w-xl bg-white p-6 rounded-xl shadow-md text-gray-900">
+      <div className="w-full max-w-xl bg-white p-6 rounded-xl shadow-md text-gray-900">
         <h1 className="text-2xl font-bold mb-4 text-center">Add New Job</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block font-medium mb-1">
-              Job Title 
-              <span className="text-red-500">*</span> 
+              Job Title <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -52,8 +86,7 @@ export default function AddJobPage() {
           </div>
           <div>
             <label className="block font-medium mb-1">
-              Company 
-              <span className="text-red-500">*</span>
+              Company <span className="text-red-500">*</span>
             </label>
             <input
               name="company"
@@ -97,11 +130,12 @@ export default function AddJobPage() {
           </button>
 
           <button
-          onClick={() => router.push('/jobs')}
-          className="mb-4 bg-gray-200 text-gray-800 px-4 py-2 rounded-md w-full hover:bg-gray-300 cursor-pointer"
+            type="button"
+            onClick={() => router.push('/jobs')}
+            className="mb-4 bg-gray-200 text-gray-800 px-4 py-2 rounded-md w-full hover:bg-gray-300 cursor-pointer"
           >
-          Cancel
-        </button>
+            Cancel
+          </button>
         </form>
       </div>
     </main>

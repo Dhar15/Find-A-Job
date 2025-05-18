@@ -13,7 +13,8 @@ declare module "next-auth" {
       email: string
       image?: string
     } & DefaultSession["user"]
-    accessToken?: string
+    accessToken?: string,
+    supabaseAccessToken?: string;
   }
 
   /**

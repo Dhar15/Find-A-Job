@@ -3,5 +3,5 @@ export interface Job {
   title: string;
   company: string;
   status: 'Wishlist' | 'Applied' | 'Interview' | 'Offer' | 'Rejected';
-  deadline: string; // ISO date string
+  deadline?: string;
 }

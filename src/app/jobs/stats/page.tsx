@@ -1,4 +1,3 @@
-// app/jobs/stats/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -10,23 +9,57 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useSession } from 'next-auth/react';
+import {supabase} from '@lib/supabase';
 
 const STATUS_COLORS: Record<string, string> = {
-  Wishlist: '#60a5fa', // blue
-  Applied: '#fb923c',  // orange
-  Interview: '#facc15', // yellow
-  Offer: '#4ade80',    // green
-  Rejected: '#f87171', // red
+  Wishlist: '#60a5fa',
+  Applied: '#fb923c',
+  Interview: '#facc15',
+  Offer: '#4ade80',
+  Rejected: '#f87171',
 };
 
 export default function JobStatsPage() {
-  // const [jobs, setJobs] = useState<any[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
-    setJobs(storedJobs);
-  }, []);
+    async function fetchJobs() {
+      const guestSession = JSON.parse(localStorage.getItem('guestSession') || 'null');
+      const isGuest = session?.user?.email === 'guest@example.com' || guestSession?.user?.email === 'guest@example.com';
+
+      console.log(isGuest);
+
+      if (isGuest) {
+          // Guest user: read from storage (local/session)
+          const stored = sessionStorage.getItem('guestJobs');
+          const parsed = stored ? JSON.parse(stored) : [];
+          setJobs(parsed);
+        } else if (session?.user?.id) {
+          console.log(session?.user?.email);
+          // Authenticated user: fetch from Supabase
+          const { data, error } = await supabase
+            .from('jobs')
+            .select('*')
+            .eq('user_id', session.user.id);
+
+          if (error) {
+            console.error('Error fetching jobs from Supabase:', error);
+            setJobs([]);
+          } else {
+            setJobs(data || []);
+          }
+        } else {
+          // No session info yet
+          setJobs([]);
+        }
+      }
+
+      if (status === 'authenticated' || status === 'unauthenticated') {
+        fetchJobs();
+      }
+  }, [status, session]);
 
   const statusCounts = jobs.reduce((acc: Record<string, number>, job: Job) => {
     const status = job.status || 'Unknown';
@@ -45,13 +78,14 @@ export default function JobStatsPage() {
   const offers = statusCounts['Offer'] || 0;
   const rejected = statusCounts['Rejected'] || 0;
   const interviews = statusCounts['Interview'] || 0;
+
   const responseRate = applied ? (((interviews + offers) / applied) * 100).toFixed(1) : '0';
   const conversionRate = applied ? ((offers / applied) * 100).toFixed(1) : '0';
   const rejectionRate = applied ? ((rejected / applied) * 100).toFixed(1) : '0';
 
   const upcoming = jobs
-    .filter((job) => job.status === 'Interview' && job.deadline && new Date(job.deadline) > new Date())
-    .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())[0];
+    .filter((job) => job.status === 'Interview' && job.deadline && !isNaN(new Date(job.deadline).getTime()) && new Date(job.deadline) > new Date())
+    .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime())[0];
 
   return (
     <div className="min-h-screen bg-gray-100 pt-24 px-4">
@@ -64,31 +98,35 @@ export default function JobStatsPage() {
           {/* Pie Chart */}
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-lg font-bold text-gray-800 text-center mb-2">Jobs by Status</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                  labelLine={false}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={STATUS_COLORS[entry.name] || '#a3a3a3'}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {pieData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    labelLine={false}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={STATUS_COLORS[entry.name] || '#a3a3a3'}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-center text-gray-500 mt-8">No job data available.</p>
+            )}
           </div>
 
-         {/* Core Metrics Summary */}
+          {/* Core Metrics */}
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-lg font-bold text-gray-800 text-center mb-2">Quick Metrics</h2>
             <div className="grid grid-cols-1 gap-4 text-center">
@@ -96,12 +134,10 @@ export default function JobStatsPage() {
                 <p className="text-gray-600">Total Jobs Tracked</p>
                 <p className="text-2xl font-bold text-gray-900">{totalJobs}</p>
               </div>
-
-               <div>
+              <div>
                 <p className="text-gray-600">Total Applications</p>
                 <p className="text-2xl font-bold text-gray-600">{applied}</p>
               </div>
-            
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-gray-600">Conversion Rate</p>
@@ -112,7 +148,6 @@ export default function JobStatsPage() {
                   <p className="text-2xl font-bold text-red-500">{rejectionRate}%</p>
                 </div>
               </div>
-
               <div>
                 <p className="text-gray-600">Response Rate</p>
                 <p className="text-2xl font-bold text-blue-600">{responseRate}%</p>
@@ -127,7 +162,7 @@ export default function JobStatsPage() {
           {upcoming ? (
             <p className="text-gray-700">
               <strong>{upcoming.title}</strong> at <strong>{upcoming.company}</strong> is due on{' '}
-              <strong>{new Date(upcoming.deadline).toLocaleDateString()}</strong>
+              <strong>{new Date(upcoming.deadline!).toLocaleDateString()}</strong>
             </p>
           ) : (
             <p className="text-gray-500">No upcoming deadlines found.</p>

@@ -1,20 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation'; 
+import { useRouter, useParams } from 'next/navigation';
 import { Job } from '@/types/job';
+import { useSession } from 'next-auth/react';
+import { supabase } from '@lib/supabase';
 
 export default function EditJobPage() {
   const router = useRouter();
-  const { id } = useParams(); 
-
-  // const [job, setJob] = useState({
-  //   id: '',
-  //   title: '',
-  //   company: '',
-  //   status: '',
-  //   deadline: '',
-  // });
+  const { id } = useParams();
+  const { data: session } = useSession();
 
   const [job, setJob] = useState<Job>({
     id: '',
@@ -24,39 +19,71 @@ export default function EditJobPage() {
     deadline: '',
   });
 
-  useEffect(() => {
+  const guestSession = JSON.parse(localStorage.getItem('guestSession') || 'null');
+  const isGuest = session?.user?.email === 'guest@example.com' || guestSession?.user?.email === 'guest@example.com';
 
-    if (id) {
-      // const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
-      const storedJobs: Job[] = JSON.parse(localStorage.getItem('jobs') || '[]');
-      
-      // const jobToEdit = storedJobs.find((job: any) => job.id === id);
-      const jobToEdit = storedJobs.find((job) => job.id === id);
-      if (jobToEdit) {
-        setJob(jobToEdit);
-      } else {
-        console.error('Job not found');
+  // Load the job
+  useEffect(() => {
+    const loadJob = async () => {
+      if (!id || typeof id !== 'string') {
+        console.error('Job ID missing or invalid');
+        return;
       }
-    } else {
-      console.error('Job ID is null or undefined');
-    }
-  }, [id]);
+
+      if (isGuest) {
+        const guestJobs: Job[] = JSON.parse(sessionStorage.getItem('guestJobs') || '[]');
+        const found = guestJobs.find((j) => j.id === id);
+        if (found) setJob(found);
+        else console.error('Job not found for guest');
+      } else {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching job:', error.message);
+        } else {
+          setJob(data);
+        }
+      }
+    };
+
+    loadJob();
+  }, [id, isGuest]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setJob({ ...job, [e.target.name]: e.target.value });
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
-    const updatedJobs = storedJobs.map((storedJob: Job) =>
-      storedJob.id === job.id ? job : storedJob
-    );
-    localStorage.setItem('jobs', JSON.stringify(updatedJobs));
-    router.push('/jobs'); // Redirect to the Job Dashboard page
+
+    if (isGuest) {
+      const guestJobs: Job[] = JSON.parse(sessionStorage.getItem('guestJobs') || '[]');
+      const updatedJobs = guestJobs.map((j) => (j.id === job.id ? job : j));
+      sessionStorage.setItem('guestJobs', JSON.stringify(updatedJobs));
+    } else {
+      const { error } = await supabase
+        .from('jobs')
+        .update({
+          title: job.title,
+          company: job.company,
+          status: job.status,
+          deadline: job.deadline,
+        })
+        .eq('id', job.id);
+
+      if (error) {
+        console.error('Error updating job:', error.message);
+        return;
+      }
+    }
+
+    router.push('/jobs');
   };
 
-  // If job.id is still empty, show the loading state
   if (!job.id) return <p>Loading...</p>;
 
   return (
@@ -65,11 +92,9 @@ export default function EditJobPage() {
         <h1 className="text-2xl font-bold mb-4 text-center">Edit Job</h1>
 
         <form onSubmit={handleSave} className="space-y-4">
-        {/* <div className="space-y-4"> */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-              Job Title
-              <span className="text-red-500">*</span>
+              Job Title <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -85,8 +110,7 @@ export default function EditJobPage() {
 
           <div>
             <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-              Company Name
-              <span className="text-red-500">*</span>
+              Company Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -134,20 +158,19 @@ export default function EditJobPage() {
           </div>
 
           <button
-              // onClick={handleSave}
-              type="submit"
-              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md w-full cursor-pointer"
-            >
-              Save Changes
+            type="submit"
+            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md w-full cursor-pointer"
+          >
+            Save Changes
           </button>
 
           <button
             onClick={() => router.push('/jobs')}
+            type="button"
             className="mb-4 bg-gray-200 text-gray-800 px-4 py-2 rounded-md w-full hover:bg-gray-300 cursor-pointer"
-            >
+          >
             Cancel
           </button>
-        {/* </div> */}
         </form>
       </div>
     </main>
