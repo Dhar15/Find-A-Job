@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import JobCard from '@components/JobCard';
 import { Job } from '@/types/job';
 
@@ -10,13 +11,16 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [showBanner, setShowBanner] = useState(false);
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const storedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
     setJobs(storedJobs);
 
     const justLoggedIn = sessionStorage.getItem('justLoggedIn');
-    if (justLoggedIn === 'true') {
+    const isAuthenticatedUser = session?.user?.email !== 'guest@example.com';
+
+    if (justLoggedIn === 'true' && isAuthenticatedUser) {
       setShowBanner(true);
       setTimeout(() => {
         setShowBanner(false);

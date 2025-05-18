@@ -17,7 +17,7 @@ export default function HomePage() {
 
   const handleLinkedInSignIn = async () => {
     sessionStorage.setItem('justLoggedIn', 'true');
-    await signIn('linkedin', { callbackUrl: '/jobs' });
+    await signIn('linkedin', { callbackUrl: '/jobs', prompt: 'login' });
   };
 
   const handleGuestLogin = () => {
