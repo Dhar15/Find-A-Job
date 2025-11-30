@@ -1,14 +1,6 @@
 import React from 'react';
 import { Job } from '@/types/job';
 
-// interface Job {
-//   id: string;
-//   title: string;
-//   company: string;
-//   status: string;
-//   deadline: string;
-// }
-
 interface Props {
   job: Job;
   onDelete: (id: string) => void;
@@ -30,16 +22,29 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
       <p className="font-medium text-gray-600">{job.company}</p>
       <p className="text-sm text-gray-500">Deadline: {job.deadline}</p>
 
-      <div
-        className={`inline-block mt-2 px-4 py-1 text-sm rounded-full text-white ${statusColors[job.status] || 'bg-gray-600'}`}
-      >
-        {job.status}
+      <div className="flex items-center gap-2 mt-2">
+        <div
+          className={`inline-block px-4 py-1 text-sm rounded-full text-white ${statusColors[job.status] || 'bg-gray-600'}`}
+        >
+          {job.status}
+        </div>
+
+        {job.status_link && (
+          <a
+            href={job.status_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-3 py-1 text-sm rounded-full text-white bg-indigo-500 hover:bg-indigo-600 transition-colors"
+          >
+            View Status
+          </a>
+        )}
       </div>
 
       <div className="flex gap-2 mt-4">
         {/* Edit Button */}
         <button
-          onClick={() => onEdit(job.id)} // Call the onEdit function passed down from the parent
+          onClick={() => onEdit(job.id)}
           className="text-blue-600 border border-blue-600 px-2 py-1 rounded hover:bg-blue-50 text-sm"
         >
           Edit
@@ -47,7 +52,7 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
         
         {/* Delete Button */}
         <button
-          onClick={() => onDelete(job.id)} // Call the onDelete function passed down from the parent
+          onClick={() => onDelete(job.id)}
           className="text-red-600 border border-red-600 px-2 py-1 rounded hover:bg-red-50 text-sm"
         >
           Delete

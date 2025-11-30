@@ -10,6 +10,7 @@ export default function AddJobPage() {
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
   const [status, setStatus] = useState('Wishlist');
+  const [statusLink, setStatusLink] = useState('');
   const [deadline, setDeadline] = useState('');
 
   const { data: session } = useSession();
@@ -27,6 +28,7 @@ export default function AddJobPage() {
       title,
       company,
       status,
+      status_link: statusLink || null,
       deadline: deadline || null,
       created_at: new Date().toISOString(),
     };
@@ -41,7 +43,9 @@ export default function AddJobPage() {
     } else {
       const userId = session?.user?.id;
 
-       console.log('Session data:', session); // Debug: Log session data
+      console.log('Session data:', session); // Debug: Log session data
+      console.log('User ID:', userId); // Debug: Log user ID
+      console.log('Job to insert:', { ...newJob, user_id: userId }); // Debug: Log job data
 
       if (!userId) {
         console.error('Authenticated user not found.');
@@ -58,7 +62,14 @@ export default function AddJobPage() {
 
       if (supabaseError) {
         console.error('Error inserting job to Supabase:', supabaseError.message);
-        alert('Failed to save job. Please try again.');
+        // alert('Failed to save job. Please try again.');
+        console.error('Error details:', {
+        message: supabaseError.message,
+        details: supabaseError.details,
+        hint: supabaseError.hint,
+        code: supabaseError.code
+      });
+      alert(`Failed to save job: ${supabaseError.message}`);
         return;
       }
     }
@@ -111,6 +122,20 @@ export default function AddJobPage() {
               <option>Offer</option>
               <option>Rejected</option>
             </select>
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Status Link</label>
+            <input
+              type="url"
+              name="statusLink"
+              value={statusLink}
+              onChange={(e) => setStatusLink(e.target.value)}
+              className="w-full border px-3 py-2 rounded-md"
+              placeholder="e.g. https://careers.google.com/jobs/12345"
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              Add a link to the job posting, application portal, or status page
+            </p>
           </div>
           <div>
             <label className="block font-medium mb-1">Deadline</label>

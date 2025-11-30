@@ -16,6 +16,7 @@ export default function EditJobPage() {
     title: '',
     company: '',
     status: 'Wishlist',
+    status_link: '',
     deadline: '',
   });
 
@@ -71,6 +72,7 @@ export default function EditJobPage() {
           title: job.title,
           company: job.company,
           status: job.status,
+          status_link: job.status_link,
           deadline: job.deadline,
         })
         .eq('id', job.id);
@@ -141,6 +143,24 @@ export default function EditJobPage() {
               <option value="Offer">Offer</option>
               <option value="Rejected">Rejected</option>
             </select>
+          </div>
+
+          <div>
+            <label htmlFor="status_link" className="block text-sm font-medium text-gray-700">
+              Status Link
+            </label>
+            <input
+              type="url"
+              id="status_link"
+              name="status_link"
+              value={job.status_link || ''}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="e.g. https://careers.google.com/jobs/12345"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Add a link to the job posting, application portal, or status page
+            </p>
           </div>
 
           <div>
