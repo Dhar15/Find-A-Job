@@ -3,6 +3,8 @@ export interface Job {
   title: string;
   company: string;
   status: 'Wishlist' | 'Applied' | 'Interview' | 'Offer' | 'Rejected';
+  portal?: string;
+  applied_on?: string;
   status_link?: string;
   deadline?: string;
 }

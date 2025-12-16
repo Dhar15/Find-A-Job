@@ -11,6 +11,8 @@ export default function AddJobPage() {
   const [company, setCompany] = useState('');
   const [status, setStatus] = useState('Wishlist');
   const [statusLink, setStatusLink] = useState('');
+  const [portal, setPortal] = useState('');
+  const [appliedOn, setAppliedOn] = useState(new Date().toISOString().split('T')[0]);
   const [deadline, setDeadline] = useState('');
 
   const { data: session } = useSession();
@@ -30,6 +32,8 @@ export default function AddJobPage() {
       status,
       status_link: statusLink || null,
       deadline: deadline || null,
+      applied_on: appliedOn || null,
+      portal: portal || null,
       created_at: new Date().toISOString(),
     };
 
@@ -42,10 +46,6 @@ export default function AddJobPage() {
       sessionStorage.setItem('guestJobs', JSON.stringify(guestJobs));
     } else {
       const userId = session?.user?.id;
-
-      console.log('Session data:', session); // Debug: Log session data
-      console.log('User ID:', userId); // Debug: Log user ID
-      console.log('Job to insert:', { ...newJob, user_id: userId }); // Debug: Log job data
 
       if (!userId) {
         console.error('Authenticated user not found.');
@@ -82,6 +82,7 @@ export default function AddJobPage() {
       <div className="w-full max-w-xl bg-white p-6 rounded-xl shadow-md text-gray-900">
         <h1 className="text-2xl font-bold mb-4 text-center">Add New Job</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
+        
           <div>
             <label className="block font-medium mb-1">
               Job Title <span className="text-red-500">*</span>
@@ -95,6 +96,7 @@ export default function AddJobPage() {
               placeholder="e.g. Product Manager"
             />
           </div>
+
           <div>
             <label className="block font-medium mb-1">
               Company <span className="text-red-500">*</span>
@@ -108,6 +110,7 @@ export default function AddJobPage() {
               placeholder="e.g. Google"
             />
           </div>
+
           <div>
             <label className="block font-medium mb-1">Status</label>
             <select
@@ -123,6 +126,25 @@ export default function AddJobPage() {
               <option>Rejected</option>
             </select>
           </div>
+
+          <div>
+            <label className="block font-medium mb-1">Portal</label>
+            <select
+              name="portal"
+              value={portal}
+              onChange={(e) => setPortal(e.target.value)}
+              className="w-full border px-3 py-2 rounded-md"
+            >
+              <option value="">Select Portal</option>
+              <option value="Internshala">Internshala</option>
+              <option value="Naukri">Naukri</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Glassdoor">Glassdoor</option>
+              <option value="Instahyre">Instahyre</option>
+              <option value="Indeed">Indeed</option>
+            </select>
+          </div>
+
           <div>
             <label className="block font-medium mb-1">Status Link</label>
             <input
@@ -137,8 +159,20 @@ export default function AddJobPage() {
               Add a link to the job posting, application portal, or status page
             </p>
           </div>
+
           <div>
-            <label className="block font-medium mb-1">Deadline</label>
+            <label className="block font-medium mb-1">Applied On</label>
+            <input
+              type="date"
+              name="appliedOn"
+              value={appliedOn}
+              onChange={(e) => setAppliedOn(e.target.value)}
+              className="w-full border px-3 py-2 rounded-md"
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1">Deadline (If applicable)</label>
             <input
               type="date"
               name="deadline"
@@ -147,6 +181,7 @@ export default function AddJobPage() {
               className="w-full border px-3 py-2 rounded-md"
             />
           </div>
+
           <button
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md w-full cursor-pointer"

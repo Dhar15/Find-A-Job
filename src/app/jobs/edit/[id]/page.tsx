@@ -17,6 +17,8 @@ export default function EditJobPage() {
     company: '',
     status: 'Wishlist',
     status_link: '',
+    portal: '',
+    applied_on: '',
     deadline: '',
   });
 
@@ -73,6 +75,8 @@ export default function EditJobPage() {
           company: job.company,
           status: job.status,
           status_link: job.status_link,
+          portal: job.portal,
+          applied_on: job.applied_on,
           deadline: job.deadline,
         })
         .eq('id', job.id);
@@ -146,6 +150,27 @@ export default function EditJobPage() {
           </div>
 
           <div>
+            <label htmlFor="portal" className="block text-sm font-medium text-gray-700">
+              Portal
+            </label>
+            <select
+              id="portal"
+              name="portal"
+              value={job.portal || ''}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">Select Portal</option>
+              <option value="Internshala">Internshala</option>
+              <option value="Naukri">Naukri</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Glassdoor">Glassdoor</option>
+              <option value="Instahyre">Instahyre</option>
+              <option value="Indeed">Indeed</option>
+            </select>
+          </div>
+
+          <div>
             <label htmlFor="status_link" className="block text-sm font-medium text-gray-700">
               Status Link
             </label>
@@ -161,6 +186,20 @@ export default function EditJobPage() {
             <p className="text-xs text-gray-500 mt-1">
               Add a link to the job posting, application portal, or status page
             </p>
+          </div>
+
+           <div>
+            <label htmlFor="applied_on" className="block text-sm font-medium text-gray-700">
+              Applied On
+            </label>
+            <input
+              type="date"
+              id="applied_on"
+              name="applied_on"
+              value={job.applied_on || ''}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
           </div>
 
           <div>

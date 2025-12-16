@@ -1,5 +1,6 @@
 import React from 'react';
 import { Job } from '@/types/job';
+import Image from 'next/image';
 
 interface Props {
   job: Job;
@@ -16,11 +17,35 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
     Rejected: 'bg-red-400',
   };
 
+  const portalLogos: Record<string, string> = {
+    Internshala: '/logos/internshala.png',
+    Naukri: '/logos/naukri.png',
+    LinkedIn: '/logos/linkedin.png',
+    Glassdoor: '/logos/glassdoor.png',
+    Instahyre: '/logos/instahyre.png',
+    Indeed: '/logos/indeed.png',
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="border p-4 rounded-md shadow-md bg-white text-gray-900 relative">
       <h3 className="text-xl font-semibold">{job.title}</h3>
       <p className="font-medium text-gray-600">{job.company}</p>
-      <p className="text-sm text-gray-500">Deadline: {job.deadline}</p>
+      
+      {job.applied_on && (
+        <p className="text-sm text-gray-500">Applied: {formatDate(job.applied_on)}</p>
+      )}
+      {job.deadline && (
+        <p className="text-sm text-gray-500">Deadline: {formatDate(job.deadline)}</p>
+      )}
 
       <div className="flex items-center gap-2 mt-2">
         <div
@@ -58,6 +83,18 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
           Delete
         </button>
       </div>
+
+      {job.portal && portalLogos[job.portal] && (
+        <div className="absolute bottom-3 right-3">
+          <Image
+            src={portalLogos[job.portal]}
+            alt={`${job.portal} logo`}
+            width={32}
+            height={32}
+            className="object-contain"
+          />
+        </div>
+      )}
     </div>
   );
 };
