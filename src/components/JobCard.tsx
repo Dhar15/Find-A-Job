@@ -91,8 +91,8 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
           <Image
             src={portalLogos[job.portal]}
             alt={`${job.portal} logo`}
-            width={32}
-            height={32}
+            width={60}
+            height={60}
             className="object-contain"
           />
         </div>

@@ -74,10 +74,10 @@ export default function EditJobPage() {
           title: job.title,
           company: job.company,
           status: job.status,
-          status_link: job.status_link,
-          portal: job.portal,
-          applied_on: job.applied_on,
-          deadline: job.deadline,
+          status_link: job.status_link || null,
+          portal: job.portal || null,
+          applied_on: job.applied_on || null,
+          deadline: job.deadline || null,
         })
         .eq('id', job.id);
 
