@@ -2,16 +2,42 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+```npm install```
 
-```bash
+Next, set up Supabase - 
+1. Create an account on supabase.com
+2. Create a new project
+3. Go to SQL editor and paste -
+
+```
+CREATE TABLE jobs (
+  id UUID PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  company TEXT NOT NULL,
+  status TEXT NOT NULL,
+  status_link TEXT,
+  deadline DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_jobs_user_id ON jobs(user_id);
+ALTER TABLE jobs DISABLE ROW LEVEL SECURITY;
+```
+4. Retreive your credentials from Project Settings → API → Project URL & anon/public key
+
+## Configure Environment Variables
+Create a file named .env.local in the project root:
+```
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+```
+
+### Run the development server:
+
+```
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
