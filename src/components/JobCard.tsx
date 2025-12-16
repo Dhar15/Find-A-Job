@@ -66,26 +66,28 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
         )}
       </div>
 
-      <div className="flex gap-2 mt-4">
-        {/* Edit Button */}
-        <button
-          onClick={() => onEdit(job.id)}
-          className="text-blue-600 border border-blue-600 px-2 py-1 rounded hover:bg-blue-50 text-sm"
-        >
-          Edit
-        </button>
-        
-        {/* Delete Button */}
-        <button
-          onClick={() => onDelete(job.id)}
-          className="text-red-600 border border-red-600 px-2 py-1 rounded hover:bg-red-50 text-sm"
-        >
-          Delete
-        </button>
-      </div>
+      <div className="flex justify-between items-center mt-4">
+        <div className="flex gap-2">
+          {/* Edit Button */}
+          <button
+            onClick={() => onEdit(job.id)}
+            className="text-blue-600 border border-blue-600 px-2 py-1 rounded hover:bg-blue-50 text-sm"
+          >
+            Edit
+          </button>
+          
+          {/* Delete Button */}
+          <button
+            onClick={() => onDelete(job.id)}
+            className="text-red-600 border border-red-600 px-2 py-1 rounded hover:bg-red-50 text-sm"
+          >
+            Delete
+          </button>
+        </div>
 
+      {/* Portal Logo */}
       {job.portal && portalLogos[job.portal] && (
-        <div className="absolute bottom-3 right-3">
+        <div className="flex-shrink-0">
           <Image
             src={portalLogos[job.portal]}
             alt={`${job.portal} logo`}
@@ -95,6 +97,7 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
           />
         </div>
       )}
+      </div>
     </div>
   );
 };
