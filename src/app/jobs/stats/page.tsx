@@ -186,7 +186,7 @@ export default function JobStatsPage() {
         <div className="mt-10 bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
           <h2 className="text-xl font-semibold text-blue-700 mb-2">📈 Pro Insight</h2>
           <p className="text-gray-700">
-            You've applied to <strong>{applied}</strong> job(s), scored <strong>{interviews}</strong> interview(s), and landed <strong>{offers}</strong> offer(s). Keep tracking your progress!
+            You&apos;ve applied to <strong>{applied}</strong> job(s), scored <strong>{interviews}</strong> interview(s), and landed <strong>{offers}</strong> offer(s). Keep tracking your progress!
           </p>
         </div>
       </div>
