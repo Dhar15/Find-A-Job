@@ -99,17 +99,17 @@ export default function JobStatsPage() {
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-lg font-bold text-gray-800 text-center mb-2">Jobs by Status</h2>
             {pieData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
                   <Pie
                     data={pieData}
                     dataKey="value"
                     nameKey="name"
                     cx="50%"
-                    cy="50%"
-                    outerRadius={100}
+                    cy="45%"
+                    outerRadius={90}
                     label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                    labelLine={false}
+                    labelLine={true}
                   >
                     {pieData.map((entry, index) => (
                       <Cell
@@ -118,7 +118,7 @@ export default function JobStatsPage() {
                       />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip formatter={(value, name) => [`${value} jobs`, name]} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -186,7 +186,7 @@ export default function JobStatsPage() {
         <div className="mt-10 bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
           <h2 className="text-xl font-semibold text-blue-700 mb-2">📈 Pro Insight</h2>
           <p className="text-gray-700">
-            You’ve applied to <strong>{applied}</strong> job(s), scored <strong>{interviews}</strong> interview(s), and landed <strong>{offers}</strong> offer(s). Keep tracking your progress!
+            You've applied to <strong>{applied}</strong> job(s), scored <strong>{interviews}</strong> interview(s), and landed <strong>{offers}</strong> offer(s). Keep tracking your progress!
           </p>
         </div>
       </div>
