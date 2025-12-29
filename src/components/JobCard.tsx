@@ -71,7 +71,7 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
           {/* Edit Button */}
           <button
             onClick={() => onEdit(job.id)}
-            className="text-blue-600 border border-blue-600 px-2 py-1 rounded hover:bg-blue-50 text-sm"
+            className="cursor-pointer text-blue-600 border border-blue-600 px-2 py-1 rounded hover:bg-blue-50 text-sm"
           >
             Edit
           </button>
@@ -79,7 +79,7 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
           {/* Delete Button */}
           <button
             onClick={() => onDelete(job.id)}
-            className="text-red-600 border border-red-600 px-2 py-1 rounded hover:bg-red-50 text-sm"
+            className="cursor-pointer text-red-600 border border-red-600 px-2 py-1 rounded hover:bg-red-50 text-sm"
           >
             Delete
           </button>

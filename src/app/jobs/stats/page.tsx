@@ -8,6 +8,11 @@ import {
   Cell,
   Tooltip,
   ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
 } from 'recharts';
 import { useSession } from 'next-auth/react';
 import {supabase} from '@lib/supabase';
@@ -20,8 +25,11 @@ const STATUS_COLORS: Record<string, string> = {
   Rejected: '#f87171',
 };
 
+type TimeView = 'month' | 'week' | 'day';
+
 export default function JobStatsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [timeView, setTimeView] = useState<TimeView>('month');
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -87,14 +95,93 @@ export default function JobStatsPage() {
     .filter((job) => job.status === 'Interview' && job.deadline && !isNaN(new Date(job.deadline).getTime()) && new Date(job.deadline) > new Date())
     .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime())[0];
 
+  // Prepare time-based data
+  const getTimeData = () => {
+    const jobsWithDates = jobs.filter((job) => job.applied_on && job.status !== 'Wishlist');
+    
+    if (timeView === 'month') {
+      const monthCounts: Record<string, number> = {};
+      jobsWithDates.forEach((job) => {
+        const date = new Date(job.applied_on!);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        monthCounts[monthKey] = (monthCounts[monthKey] || 0) + 1;
+      });
+      return Object.entries(monthCounts)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([month, count]) => ({
+          name: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+          applications: count,
+        }));
+    } else if (timeView === 'week') {
+      const weekCounts: Record<string, number> = {};
+      jobsWithDates.forEach((job) => {
+        const date = new Date(job.applied_on!);
+        const weekStart = new Date(date);
+        weekStart.setDate(date.getDate() - date.getDay());
+        const weekKey = weekStart.toISOString().split('T')[0];
+        weekCounts[weekKey] = (weekCounts[weekKey] || 0) + 1;
+      });
+      return Object.entries(weekCounts)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([week, count]) => ({
+          name: new Date(week).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          applications: count,
+        }));
+    } else {
+      const dayCounts: Record<string, number> = {};
+      jobsWithDates.forEach((job) => {
+        const date = new Date(job.applied_on!);
+        const dayKey = date.toISOString().split('T')[0];
+        dayCounts[dayKey] = (dayCounts[dayKey] || 0) + 1;
+      });
+      return Object.entries(dayCounts)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .slice(-30) // Last 30 days
+        .map(([day, count]) => ({
+          name: new Date(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          applications: count,
+        }));
+    }
+  };
+
+  const timeData = getTimeData();
+
   return (
     <div className="min-h-screen bg-gray-100 pt-24 px-4">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-extrabold text-center text-gray-900 mb-4">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-extrabold text-center text-gray-900 mb-6">
           📊 Job Statistics
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Quick Metrics - Full Width */}
+        <div className="bg-white p-6 rounded-xl shadow mb-8">
+          <h2 className="text-lg font-bold text-gray-800 text-center mb-4">Quick Metrics</h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+            <div>
+              <p className="text-gray-600 text-sm">Total Jobs</p>
+              <p className="text-3xl font-bold text-gray-900">{totalJobs}</p>
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Applications</p>
+              <p className="text-3xl font-bold text-gray-600">{applied}</p>
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Response Rate</p>
+              <p className="text-3xl font-bold text-blue-600">{responseRate}%</p>
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Conversion</p>
+              <p className="text-3xl font-bold text-green-600">{conversionRate}%</p>
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Rejection</p>
+              <p className="text-3xl font-bold text-red-500">{rejectionRate}%</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Two Charts Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Pie Chart */}
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-lg font-bold text-gray-800 text-center mb-2">Jobs by Status</h2>
@@ -126,38 +213,67 @@ export default function JobStatsPage() {
             )}
           </div>
 
-          {/* Core Metrics */}
+          {/* Bar Chart */}
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-bold text-gray-800 text-center mb-2">Quick Metrics</h2>
-            <div className="grid grid-cols-1 gap-4 text-center">
-              <div>
-                <p className="text-gray-600">Total Jobs Tracked</p>
-                <p className="text-2xl font-bold text-gray-900">{totalJobs}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Total Applications</p>
-                <p className="text-2xl font-bold text-gray-600">{applied}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-gray-600">Conversion Rate</p>
-                  <p className="text-2xl font-bold text-green-600">{conversionRate}%</p>
-                </div>
-                <div>
-                  <p className="text-gray-600">Rejection Rate</p>
-                  <p className="text-2xl font-bold text-red-500">{rejectionRate}%</p>
-                </div>
-              </div>
-              <div>
-                <p className="text-gray-600">Response Rate</p>
-                <p className="text-2xl font-bold text-blue-600">{responseRate}%</p>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-gray-800">Applications by Time</h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setTimeView('month')}
+                  className={`px-3 py-1 text-sm rounded ${
+                    timeView === 'month'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  Month
+                </button>
+                <button
+                  onClick={() => setTimeView('week')}
+                  className={`px-3 py-1 text-sm rounded ${
+                    timeView === 'week'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  Week
+                </button>
+                <button
+                  onClick={() => setTimeView('day')}
+                  className={`px-3 py-1 text-sm rounded ${
+                    timeView === 'day'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  Day
+                </button>
               </div>
             </div>
+            {timeData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={timeData} barSize={50}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="name" 
+                    angle={-45} 
+                    textAnchor="end" 
+                    height={80}
+                    fontSize={12}
+                  />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="applications" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-center text-gray-500 mt-8">No application data available.</p>
+            )}
           </div>
         </div>
 
         {/* Upcoming Deadline */}
-        <div className="mt-10 bg-red-100 border border-gray-200 rounded-xl p-6 text-center">
+        <div className="bg-red-100 border border-gray-200 rounded-xl p-6 text-center mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-2">📅 Upcoming Interview</h2>
           {upcoming ? (
             <p className="text-gray-700">
@@ -170,7 +286,7 @@ export default function JobStatsPage() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {Object.entries(statusCounts).map(([status, count]) => (
             <div
               key={status}
@@ -183,7 +299,7 @@ export default function JobStatsPage() {
         </div>
 
         {/* Pro Insight */}
-        <div className="mt-10 bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
           <h2 className="text-xl font-semibold text-blue-700 mb-2">📈 Pro Insight</h2>
           <p className="text-gray-700">
             You&apos;ve applied to <strong>{applied}</strong> job(s), scored <strong>{interviews}</strong> interview(s), and landed <strong>{offers}</strong> offer(s). Keep tracking your progress!
