@@ -35,6 +35,7 @@ export default function JobsPage() {
           .from('jobs')
           .select('*')
           .eq('user_id', session.user.id)
+          .order('applied_on', { ascending: false, nullsFirst: false })
           .order('created_at', { ascending: false });
 
         if (error) {
