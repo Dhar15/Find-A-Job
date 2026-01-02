@@ -120,6 +120,16 @@ export default function JobsPage() {
   };
 
   const handleDelete = async (id: string) => {
+    // Confirm before deleting
+    const jobToDelete = jobs.find(job => job.id === id);
+    if (!jobToDelete) return;
+
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${jobToDelete.title}" at "${jobToDelete.company}"?`
+    );
+
+    if (!confirmDelete) return;
+
     const updatedJobs = jobs.filter((job) => job.id !== id);
     setJobs(updatedJobs);
 
@@ -139,6 +149,8 @@ export default function JobsPage() {
 
       if (error) {
         console.error('Failed to delete job:', error.message);
+        alert('Failed to delete job. Please try again.');
+        setJobs(jobs);
       }
     }
   };

@@ -61,8 +61,13 @@ export default function AddJobPage() {
           .select();
 
       if (supabaseError) {
+        // Unique constraint violation
+        if (supabaseError.code === '23505') {
+          console.error('Duplicate job entry:', supabaseError.message);
+          alert('You have already added this role at this company.');
+          return;
+        }
         console.error('Error inserting job to Supabase:', supabaseError.message);
-        // alert('Failed to save job. Please try again.');
         console.error('Error details:', {
         message: supabaseError.message,
         details: supabaseError.details,
