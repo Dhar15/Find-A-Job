@@ -24,3 +24,36 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Responsive background image for pages */
+.bg-cover {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Mobile optimization for background images */
+@media (max-width: 768px) {
+  .bg-cover {
+    background-size: auto 100%;
+    background-position: center top;
+    background-attachment: scroll;
+  }
+}
+
+/* Tablet optimization */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .bg-cover {
+    background-size: cover;
+    background-position: center center;
+  }
+}
+
+/* Desktop - full cover */
+@media (min-width: 1025px) {
+  .bg-cover {
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+}

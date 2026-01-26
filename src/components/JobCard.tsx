@@ -37,7 +37,33 @@ const JobCard: React.FC<Props> = ({ job, onDelete, onEdit }) => {
 
   return (
     <div className="border p-4 rounded-md shadow-md bg-white text-gray-900 relative">
-      <h3 className="text-xl font-semibold">{job.title}</h3>
+      <div className="flex justify-between items-start mb-1">
+        <h3 className="text-xl font-semibold">{job.title}</h3>
+        {job.notes && (
+            <div className="group relative">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-blue-500 cursor-help"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div className="invisible group-hover:visible absolute right-0 top-6 w-64 p-3 bg-gray-800 text-white text-sm rounded-lg shadow-lg z-10">
+                <div className="font-semibold mb-1">Notes:</div>
+                <div className="whitespace-pre-wrap">{job.notes}</div>
+                <div className="absolute -top-1 right-2 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+              </div>
+            </div>
+          )}
+      </div>
+
       <p className="font-medium text-gray-600">{job.company}</p>
       
       {job.applied_on && (

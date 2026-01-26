@@ -19,6 +19,7 @@ export default function EditJobPage() {
     status_link: '',
     portal: '',
     applied_on: '',
+    notes: '',
     deadline: '',
   });
 
@@ -56,7 +57,9 @@ export default function EditJobPage() {
     loadJob();
   }, [id, isGuest]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     setJob({ ...job, [e.target.name]: e.target.value });
   };
 
@@ -77,6 +80,7 @@ export default function EditJobPage() {
           status_link: job.status_link || null,
           portal: job.portal || null,
           applied_on: job.applied_on || null,
+          notes: job.notes || null,
           deadline: job.deadline || null,
         })
         .eq('id', job.id);
@@ -213,6 +217,21 @@ export default function EditJobPage() {
               value={job.deadline}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+           <div>
+            <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+              Notes
+            </label>
+            <textarea
+              id="notes"
+              name="notes"
+              value={job.notes || ''}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="Add any notes about this application"
+              rows={3}
             />
           </div>
 

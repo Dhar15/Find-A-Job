@@ -14,6 +14,7 @@ export default function AddJobPage() {
   const [portal, setPortal] = useState('');
   const [appliedOn, setAppliedOn] = useState(new Date().toISOString().split('T')[0]);
   const [deadline, setDeadline] = useState('');
+  const [notes, setNotes] = useState('');
 
   const { data: session } = useSession();
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function AddJobPage() {
       deadline: deadline || null,
       applied_on: appliedOn || null,
       portal: portal || null,
+      notes: notes || null,
       created_at: new Date().toISOString(),
     };
 
@@ -184,6 +186,18 @@ export default function AddJobPage() {
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
               className="w-full border px-3 py-2 rounded-md"
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1">Notes</label>
+            <textarea
+              name="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full border px-3 py-2 rounded-md"
+              placeholder="Add any notes about this application (e.g., referral name, interview feedback, etc.)"
+              rows={3}
             />
           </div>
 

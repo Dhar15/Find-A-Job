@@ -6,5 +6,6 @@ export interface Job {
   portal?: string;
   applied_on?: string;
   status_link?: string;
+  notes?: string;
   deadline?: string;
 }
