@@ -46,9 +46,19 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center px-4" style={{ backgroundImage: "url('/images/background.jpg')", backgroundPosition: "center", }}>
+    <main className="min-h-screen bg-cover flex flex-col items-center justify-center px-4" style={{ backgroundImage: "url('/images/background.png')" }}>
       <div className="text-center">
 
+      <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 sm:mb-6 text-blue-600 drop-shadow-lg">
+          Just Apply Mate
+      </h1>
+      <h2 className="text-base sm:text-lg md:text-xl mb-6 sm:mb-10 text-gray-800 drop-shadow-md">
+        The Ultimate Job Application Tracker
+      </h2>
+      <h3 className="text-sm sm:text-base md:text-md mb-4 sm:mb-6 text-gray-700 drop-shadow-sm italic px-4">
+        Track your job applications with ease and stay organized throughout your job search journey.
+      </h3>
+      
         <div className="fixed bottom-15 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2">
 
           <div className="relative group w-max mx-auto">
